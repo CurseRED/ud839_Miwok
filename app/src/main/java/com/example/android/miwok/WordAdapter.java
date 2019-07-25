@@ -1,6 +1,7 @@
 package com.example.android.miwok;
 
 import android.content.Context;
+import android.media.MediaPlayer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -8,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -37,7 +39,7 @@ public class WordAdapter extends ArrayAdapter<Word> {
         textContainer.setBackgroundColor(color);
         ImageView imageView = (ImageView) listItemView.findViewById(R.id.list_item_icon);
         if (currentWord.hasImage()) {
-            imageView.setImageResource(currentWord.getmImageResourceId());
+            imageView.setImageResource(currentWord.getImageResourceId());
             imageView.setVisibility(View.VISIBLE);
         }
         else
