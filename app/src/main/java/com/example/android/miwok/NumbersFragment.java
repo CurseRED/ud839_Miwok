@@ -1,38 +1,21 @@
-/*
- * Copyright (C) 2016 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package com.example.android.miwok;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.support.v7.app.AppCompatActivity;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class NumbersActivity extends AppCompatActivity {
+public class NumbersFragment extends Fragment {
 
     private MediaPlayer mMediaPlayer;
     private AudioManager mAudioManager;
@@ -60,11 +43,17 @@ public class NumbersActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_numbers);
+    public void onStop() {
+        super.onStop();
+        releaseMediaPlayer();
+    }
 
-        mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View rootView = inflater.inflate(R.layout.fragment_numbers, container, false);
+        mAudioManager = (AudioManager) getActivity().getSystemService(Context.AUDIO_SERVICE);
 
         final ArrayList<Word> words = new ArrayList<Word>();
 
@@ -79,9 +68,8 @@ public class NumbersActivity extends AppCompatActivity {
         words.add(new Word("Nine", "wo'e", R.drawable.number_nine, R.raw.number_nine));
         words.add(new Word("Ten", "na'aacha", R.drawable.number_ten, R.raw.number_ten));
 
-        WordAdapter wordAdapter =
-                new WordAdapter(this, words, R.color.category_numbers);
-        ListView listView = (ListView) findViewById(R.id.numbers_list_view);
+        WordAdapter wordAdapter = new WordAdapter(getActivity(), words, R.color.category_numbers);
+        ListView listView = (ListView) rootView.findViewById(R.id.numbers_list_view);
         listView.setAdapter(wordAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -91,18 +79,13 @@ public class NumbersActivity extends AppCompatActivity {
                         AudioManager.STREAM_MUSIC,
                         AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
                 if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                    mMediaPlayer = MediaPlayer.create(getBaseContext(), words.get(position).getSongResourceId());
+                    mMediaPlayer = MediaPlayer.create(getActivity(), words.get(position).getSongResourceId());
                     mMediaPlayer.start();
                     mMediaPlayer.setOnCompletionListener(mOnCompletionListener);
                 }
             }
         });
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        releaseMediaPlayer();
+        return rootView;
     }
 
     private void releaseMediaPlayer() {
@@ -112,5 +95,4 @@ public class NumbersActivity extends AppCompatActivity {
         }
         mAudioManager.abandonAudioFocus(mOnAudioFocusChangeListener);
     }
-
 }
